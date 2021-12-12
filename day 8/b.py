@@ -13,18 +13,15 @@ zero = one = two = three = four = five = six = seven = eight = nine = ""
 
 def setKnown(line: str):
     parts = line.split()
+    global one, four, seven, eight
     for part in parts:
         if len(part) == 2:
-            global one
             one = part
-        if len(part) == 3:
-            global seven
+        elif len(part) == 3:
             seven = part
-        if len(part) == 4:
-            global four
+        elif len(part) == 4:
             four = part
-        if len(part) == 7:
-            global eight
+        elif len(part) == 7:
             eight = part
 
 def getTop():

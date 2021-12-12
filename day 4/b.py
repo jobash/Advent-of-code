@@ -10,7 +10,7 @@ class Square():
     def __str__(self):
         return str(self.num) + (" X" if self.marked else " -") + ("\n" if self.yPos == 4 else "") + ("\n" if self.yPos == 4 and self.xPos == 4 else "")
 
-squares: list[Square] = []
+squares: 'list[Square]' = []
 
 def applyNumber(number: int):
     for i in range(0, len(squares)):
@@ -40,7 +40,7 @@ def checkBoards():
             checkRowAndCol(square)
 
 
-def createBoard(lines: list[str], bIndex: int):
+def createBoard(lines: 'list[str]', bIndex: int):
     for i in range(0, len(lines)):
         nums = lines[i].split()
         for j in range(0, len(nums)):
