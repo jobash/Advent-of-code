@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import defaultdict, Counter
 possiblePaths = defaultdict(list)
 paths = []
 
@@ -6,11 +6,21 @@ def findPaths(visited, node):
     visited.append(node)
     nodePaths = possiblePaths.get(node)
     for nodePath in nodePaths:
+        if nodePath == 'start':
+            continue
         if nodePath == 'end':
-            visited.append(nodePath)
-            paths.append(visited)
-        if nodePath != 'start' and nodePath != 'end' and (visited.count(nodePath) < 2 or nodePath.isupper()):
-            
+            visCopy = visited.copy()
+            visCopy.append(nodePath)
+            paths.append(visCopy)
+            continue
+        continuePath = True
+        if nodePath.islower():
+            c = Counter(visited)
+            nodeCount = c.get(nodePath, 0)
+            for key, value in c.items():
+                if nodeCount > 0 and key.islower() and value > 1:
+                    continuePath = False
+        if continuePath:
             findPaths(visited.copy(), nodePath)
 
 lines = [line.rstrip() for line in open('input.txt')]
@@ -22,4 +32,4 @@ for line in lines:
 
 findPaths([], 'start')
 print(len(paths))
-print('\n'.join([''.join(['{:6}'.format(item) for item in row]) for row in paths]))
+#print('\n'.join([''.join(['{:6}'.format(item) for item in row]) for row in paths]))
