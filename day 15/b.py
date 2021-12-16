@@ -1,44 +1,43 @@
 import math
-import sys
-sys.setrecursionlimit(10000)
+import heapq
 
 matrix = []
 lines = [line.rstrip() for line in open('input.txt')]
 for line in lines:
     matrix.append([int(char) for char in list(line)])
 
-costMatrix = [[math.inf]*len(matrix) * 5 for _ in range(len(matrix[0]) * 5)]
+x_length = len(matrix)
+y_length = len(matrix[0])
+dir_x = [-1, 0, 1, 0]
+dir_y = [0, -1, 0, 1]
 
-def calculateCosts(x, y, currentCost):
-    normalized_x = x % len(matrix)
-    normalized_y = y % len(matrix[0])
-    if x < len(costMatrix) - 1:
-        x_mult = math.floor((x + 1) / len(matrix))
-        y_mult = math.floor(y / len(matrix[0]))
-        numberToAdd = 1 * (x_mult + y_mult)
-        matrixVal = (matrix[(normalized_x + 1) % len(matrix)][normalized_y] + numberToAdd)
-        if matrixVal > len(matrix):
-            matrixVal -= len(matrix)
-        if currentCost + matrixVal < costMatrix[x + 1][y]:
-            costMatrix[x + 1][y] = currentCost + matrixVal
-            calculateCosts(x + 1, y, currentCost + matrixVal)
-    if y < len(costMatrix[0]) - 1:
-        x_mult = math.floor(x / len(matrix))
-        y_mult = math.floor((y + 1) / len(matrix[0]))
-        numberToAdd = 1 * (x_mult + y_mult)
-        matrixVal = (matrix[normalized_x][(normalized_y + 1) % len(matrix[0])] + numberToAdd)
-        if matrixVal > len(matrix[0]):
-            matrixVal -= len(matrix[0])
-        if currentCost + matrixVal < costMatrix[x][y + 1]:
-            costMatrix[x][y + 1] = currentCost + matrixVal
-            calculateCosts(x, y + 1, currentCost + matrixVal)
+def dijkstra(tiles):
+    D = [[math.inf for _ in range(tiles*y_length)] for _ in range(tiles*x_length)]
+    queue = [(0, 0, 0)]
 
-currentCost = 0
-start_x = 0
-start_y = 0
-costMatrix[start_x][start_y] = 0
-calculateCosts(start_x, start_y, currentCost)
-goal_x = len(costMatrix) - 1
-goal_y = len(costMatrix[0]) - 1
-#print('\n'.join([''.join(['{:4}'.format(item) for item in row]) for row in costMatrix]))
-print(costMatrix[goal_x][goal_y])
+    while queue:
+        (dist, row, col) = heapq.heappop(queue)
+        if row < 0 or row >= tiles*x_length or col < 0 or col >= tiles*y_length:
+            continue
+
+        value = matrix[row % x_length][col % y_length] + (row//x_length) + (col//y_length)
+        while value > 9:
+            value -= 9
+
+        cost = dist + value
+        if D[row][col] == math.inf or cost < D[row][col]:
+            D[row][col] = cost
+        else:
+            continue
+        
+        if row == tiles * x_length - 1 and col == tiles * y_length - 1:
+            break
+        for dir in range(4):
+            neighbor_x = row + dir_x[dir]
+            neighbor_y = col + dir_y[dir]
+            heapq.heappush(queue, (cost, neighbor_x, neighbor_y))
+
+
+    return D[tiles*x_length-1][tiles*y_length-1] - matrix[0][0]
+
+print(dijkstra(5))
