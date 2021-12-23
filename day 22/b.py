@@ -19,17 +19,16 @@ for line in lines:
     z_min = int(vars[2].split('..')[0][2:])
     z_max = int(vars[2].split('..')[1])
 
-    if x_min < -50 or y_min < -50 or z_min < -50 or x_min > 50 or y_min > 50 or z_min > 50:
-        continue
-    for i in range(x_min, x_max + 1):
-        for j in range(y_min, y_max + 1):
-            for k in range(z_min, z_max + 1):
-                if on:
-                    cubes.update({(i,j,k): 1})
-                else:
-                    try:
-                        del cubes[(i,j,k)]
-                    except:
-                        pass
-
-print(len(cubes))
+    lst = {}
+    if on:
+        lst.update({(x_min, x_max, y_min, y_max, z_min, z_max): 1})
+    for c in cubes:
+        intersection = getIntersection(x_min, x_max, y_min, y_max, z_min, z_max, c[0], c[1], c[2], c[3], c[4], c[5])
+        if intersection != None:
+            lst.update({(intersection[0], intersection[1], intersection[2], intersection[3], intersection[4], intersection[5]): -1 if on else 1})
+    cubes.update(lst)
+        
+sum = 0
+for c, value in cubes.items():
+    sum = sum + ((c[1] + 1 - c[0])*(c[3] + 1 - c[2])*(c[5] + 1 - c[4]))*value
+print(sum)
